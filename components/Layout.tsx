@@ -15,10 +15,7 @@ import {
   AlertTriangle, 
   CreditCard, 
   BarChart3, 
-  LogOut,
   Menu,
-  Moon,
-  Sun,
   Award,
   BookOpen,
   X,
@@ -137,7 +134,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const company = storage.getCompanyConfig(user.companyId);
   const modules = company.modules;
 
-  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -149,13 +145,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       localStorage.setItem('theme', 'light');
     }
   }, [darkMode]);
-
-  const toggleTheme = () => setDarkMode(!darkMode);
-
-  const handleLogout = () => {
-      localStorage.removeItem(StorageKeys.USER_PROFILE);
-      navigate('/login');
-  };
 
   const handleConfirmUpdate = () => {
       localStorage.setItem('sys_app_version', pendingVersion);
@@ -365,27 +354,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             </nav>
 
             <div className="pt-6 border-t border-slate-100 dark:border-slate-700 mt-2 space-y-2">
-                
-                {/* Theme Toggle */}
-                <button 
-                    onClick={toggleTheme}
-                    className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                >
-                    <div className="flex items-center gap-3">
-                        {darkMode ? <Moon size={18} /> : <Sun size={18} />}
-                        <span className="text-sm font-medium">{darkMode ? 'Тёмная тема' : 'Светлая тема'}</span>
-                    </div>
-                </button>
-
-                {/* Logout Button */}
-                <button 
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                >
-                    <LogOut size={18} />
-                    <span className="text-sm font-medium">Выйти</span>
-                </button>
-
                 {/* User Profile Link */}
                 <div 
                     onClick={() => navigate('/profile')}

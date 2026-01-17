@@ -6,6 +6,15 @@ import { AlertCircle, Wallet, Edit2, X, Plus, CheckCircle, Calendar, Search, Fil
 import { DateRangePicker } from '../components/DateRangePicker';
 import { useData } from '../hooks/useData';
 
+// Define PaymentState interface locally
+interface PaymentState {
+    amount: number;
+    method: 'Наличные' | 'Алиф' | 'DC' | 'Карта' | 'Перевод';
+    subjectDistribution: Record<string, number>;
+    promiseDate: string;
+    promiseReason: string;
+}
+
 export const Finance: React.FC = () => {
   const [students, setStudents] = useData<Student[]>(StorageKeys.STUDENTS, []);
   const [transactions, setTransactions] = useData<Transaction[]>(StorageKeys.TRANSACTIONS, []);
@@ -29,10 +38,10 @@ export const Finance: React.FC = () => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [paymentSearch, setPaymentSearch] = useState('');
   const [paymentTarget, setPaymentTarget] = useState<Student | null>(null);
-  const [paymentData, setPaymentData] = useState({
+  const [paymentData, setPaymentData] = useState<PaymentState>({
       amount: 0,
-      method: 'Наличные' as 'Наличные' | 'Алиф' | 'DC' | 'Карта' | 'Перевод',
-      subjectDistribution: {} as Record<string, number>,
+      method: 'Наличные',
+      subjectDistribution: {},
       promiseDate: '',
       promiseReason: ''
   });
@@ -289,7 +298,7 @@ export const Finance: React.FC = () => {
               .filter(([_, amt]) => amt > 0)
               .map(([sub, amt]) => `${sub}: ${amt}`)
               .join(', ');
-          if (details) purposeStr += ` (${details})`;
+            if (details) purposeStr += ` (${details})`;
       }
 
       const newTransaction: Transaction = {
@@ -528,8 +537,11 @@ export const Finance: React.FC = () => {
                           const start = selectedStudentForCard.startDate ? new Date(selectedStudentForCard.startDate) : null;
                           const end = selectedStudentForCard.endDate ? new Date(selectedStudentForCard.endDate) : null;
                           const compDate = new Date(date.getFullYear(), date.getMonth(), 1);
-                          const isActivePeriod = (!start || compDate >= new Date(start.getFullYear(), start.getMonth(), 1)) && 
-                                                 (!end || compDate <= end);
+                          
+                          // Fix: Use .getTime() to avoid 'unknown' and 'number' operator >/< issues
+                          const startCheck = start ? compDate.getTime() >= new Date(start.getFullYear(), start.getMonth(), 1).getTime() : true;
+                          const endCheck = end ? compDate.getTime() <= end.getTime() : true;
+                          const isActivePeriod = startCheck && endCheck;
 
                           if (inv) {
                               if (inv.status === 'Оплачен') {
@@ -539,7 +551,8 @@ export const Finance: React.FC = () => {
                                   statusClass = 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800';
                                   label = 'Долг';
                               }
-                          } else if (isActivePeriod && compDate < new Date(new Date().getFullYear(), new Date().getMonth(), 1)) {
+                          // Fix: Use .getTime() here as well
+                          } else if (isActivePeriod && compDate.getTime() < new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime()) {
                                statusClass = 'bg-slate-200 dark:bg-slate-600 text-slate-500 border-slate-300 dark:border-slate-500';
                                label = '-';
                           }
@@ -820,7 +833,7 @@ export const Finance: React.FC = () => {
                     </button>
                 </div>
                 
-                <div className="p-6 space-y-6 overflow-y-auto custom-scrollbar">
+                <div className="p-6 space-y-6 overflow-y-auto custom-scrollbar min-h-[400px]">
                     
                     {/* Search Section */}
                     {!paymentTarget ? (
@@ -957,6 +970,8 @@ export const Finance: React.FC = () => {
                                                 onChange={(d) => setPaymentData({...paymentData, promiseDate: d})}
                                                 mode="single"
                                                 className="w-full"
+                                                align="right"
+                                                direction="up" // Force UP direction
                                             />
                                         </div>
                                         <div>
@@ -1041,7 +1056,7 @@ export const Finance: React.FC = () => {
                       </div>
                       
                       {/* Manual Debt Payment Option */}
-                      {Math.abs(selectedDebtor.balance) > invoices.filter(i => i.studentId === selectedDebtor.id && i.status === 'Ожидает').reduce((sum, i) => sum + i.amount, 0) && (
+                      {Math.abs(Number(selectedDebtor.balance)) > invoices.filter(i => i.studentId === selectedDebtor.id && i.status === 'Ожидает').reduce((sum, i) => sum + i.amount, 0) && (
                           <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
                               <p className="text-xs text-slate-500 mb-2">Есть остаток долга без счета (ручной):</p>
                               <button 

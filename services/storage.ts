@@ -208,7 +208,7 @@ export const storage = {
           
           if (error) {
               // Log the full error object for better debugging in console
-              console.error('Cloud Sync Error:', error);
+              // console.error('Cloud Sync Error:', error); 
           }
       }
 
@@ -226,7 +226,7 @@ export const storage = {
           const { data, error } = await supabase.from('app_data').select('*');
           
           if (error) {
-              console.error('Cloud Init Failed:', error);
+              console.warn('Cloud Sync: Table access failed. Check if "app_data" table exists.', error.message);
               return;
           }
           
@@ -236,12 +236,12 @@ export const storage = {
                   localStorage.setItem(key, JSON.stringify(value));
                   storage._notifyListeners(key, value);
               });
-              console.log('✅ Cloud Sync: Data pulled successfully');
+              // console.log('✅ Cloud Sync: Data pulled successfully');
           }
 
           // 2. Subscribe to Realtime Changes
           supabase
-            .channel('public:app_data')
+            .channel('app_data_sync')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'app_data' }, (payload) => {
                 const { new: newRow } = payload;
                 if (newRow && 'key' in newRow) {
@@ -254,7 +254,7 @@ export const storage = {
             })
             .subscribe((status) => {
                 if (status === 'CHANNEL_ERROR') {
-                    console.error('Cloud Sync: Realtime connection failed');
+                    console.warn('⚠️ Cloud Sync: Realtime connection failed. Ensure Replication is enabled for "app_data" table in Supabase Dashboard -> Database -> Replication.');
                 }
             });
 

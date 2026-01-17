@@ -10,6 +10,7 @@ interface DateRangePickerProps {
   align?: 'left' | 'right';
   mode?: 'single' | 'range';
   className?: string;
+  direction?: 'up' | 'down';
 }
 
 const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
@@ -22,7 +23,8 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   label, 
   align = 'left',
   mode = 'range',
-  className = ''
+  className = '',
+  direction = 'down'
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   
@@ -282,7 +284,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
         </div>
       
       {isOpen && (
-        <div className={`absolute top-full mt-2 z-50 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-600 p-4 ${align === 'right' ? 'right-0' : 'left-0'}`}>
+        <div className={`absolute z-50 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-600 p-4 ${align === 'right' ? 'right-0' : 'left-0'} ${direction === 'up' ? 'bottom-full mb-2' : 'top-full mt-2'}`}>
           {renderMonth(viewDate)}
           <div className="mt-2 pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-2">
               <button type="button" onClick={handleReset} className="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">Сбросить</button>

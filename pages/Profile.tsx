@@ -1,10 +1,12 @@
 
 import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { storage, StorageKeys } from '../services/storage';
 import { UserRole, UserProfile, Branch } from '../types';
-import { Save, User, Mail, Shield, Camera, CheckCircle, MapPin } from 'lucide-react';
+import { Save, User, Mail, Shield, Camera, CheckCircle, MapPin, Moon, Sun, LogOut } from 'lucide-react';
 
 export const Profile: React.FC = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<UserProfile>(() => storage.get(StorageKeys.USER_PROFILE, {
     fullName: 'Администратор',
     role: UserRole.GeneralDirector,
@@ -15,6 +17,13 @@ export const Profile: React.FC = () => {
   }));
   
   const [isSaved, setIsSaved] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return document.documentElement.classList.contains('dark');
+    }
+    return false;
+  });
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSave = () => {
@@ -33,6 +42,23 @@ export const Profile: React.FC = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleLogout = () => {
+      localStorage.removeItem(StorageKeys.USER_PROFILE);
+      navigate('/login');
+  };
+
+  const toggleTheme = () => {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+        setDarkMode(false);
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+        setDarkMode(true);
+      }
   };
 
   const canEditBranch = user.role === UserRole.GeneralDirector || user.role === UserRole.Developer;
@@ -170,6 +196,27 @@ export const Profile: React.FC = () => {
                   ))}
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* System Settings (Theme & Logout) */}
+          <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-6">
+            <h4 className="font-bold text-lg text-slate-800 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-4">Система</h4>
+            <div className="space-y-4">
+                <button onClick={toggleTheme} className="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
+                    <div className="flex items-center gap-3">
+                        {darkMode ? <Moon size={20} className="text-slate-600 dark:text-slate-300"/> : <Sun size={20} className="text-orange-500"/>}
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{darkMode ? 'Тёмная тема' : 'Светлая тема'}</span>
+                    </div>
+                    <div className={`w-10 h-5 rounded-full relative transition-colors ${darkMode ? 'bg-blue-600' : 'bg-slate-300'}`}>
+                        <div className={`absolute top-1 left-1 w-3 h-3 bg-white rounded-full transition-transform ${darkMode ? 'translate-x-5' : ''}`}></div>
+                    </div>
+                </button>
+
+                <button onClick={handleLogout} className="w-full flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
+                    <LogOut size={20} />
+                    <span className="text-sm font-medium">Выйти из системы</span>
+                </button>
             </div>
           </div>
         </div>

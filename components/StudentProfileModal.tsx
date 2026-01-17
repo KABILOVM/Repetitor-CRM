@@ -32,6 +32,15 @@ const ICON_MAP: Record<string, React.ElementType> = {
     'Languages': Languages, 'PenTool': PenTool
 };
 
+// Defined locally to ensure type safety
+interface PaymentState {
+    amount: number;
+    method: 'Наличные' | 'Алиф' | 'DC' | 'Карта' | 'Перевод';
+    subjectDistribution: Record<string, number>;
+    promiseDate: string;
+    promiseReason: string;
+}
+
 const getSubjectIcon = (name: string, course?: Course) => {
     if (course) {
         const Icon = ICON_MAP[course.icon || 'BookOpen'] || BookOpen;
@@ -112,7 +121,6 @@ interface GroupSelectorProps {
 }
 
 const GroupSelector: React.FC<GroupSelectorProps> = ({ groups, selectedGroupId, onChange, disabled, placeholder = "Выберите группу..." }) => {
-    // ... (GroupSelector implementation remains unchanged)
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -167,7 +175,7 @@ const GroupSelector: React.FC<GroupSelectorProps> = ({ groups, selectedGroupId, 
                             <span className="flex items-center gap-2 w-full">
                                 <span className="font-bold truncate">{selectedGroup.name}</span>
                                 <span className="text-slate-500 dark:text-slate-400 truncate hidden sm:inline">— {selectedGroup.teacher.split(' ')[0]}</span>
-                                <span className={`text-[10px] ml-auto font-mono px-1.5 py-0.5 rounded flex-shrink-0 ${(selectedGroup.studentsCount || 0) >= (selectedGroup.maxStudents || 0) ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`}>
+                                <span className={`text-[10px] ml-auto font-mono px-1.5 py-0.5 rounded flex-shrink-0 ${(Number(selectedGroup.studentsCount) || 0) >= (Number(selectedGroup.maxStudents) || 0) ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`}>
                                     {selectedGroup.studentsCount}/{selectedGroup.maxStudents}
                                 </span>
                             </span>
@@ -245,8 +253,13 @@ interface StudentProfileModalProps {
     onSave: (updatedStudent: Student) => void;
 }
 
+// Define interface for heatmap row to fix type inference issues
+interface HeatmapRow {
+    subject: string;
+    months: ({ percent: number; count: number; rawAvg: number } | null)[];
+}
+
 export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({ student, onClose, onSave }) => {
-    // ... (rest of the component code, similar to previous state)
     // --- LOAD COMPANY CONFIGURATION ---
     const user = storage.get<UserProfile>(StorageKeys.USER_PROFILE, { role: UserRole.GeneralDirector, fullName: 'Admin', email: '', permissions: [] });
     const company = storage.getCompanyConfig(user.companyId || 'repetitor_tj');
@@ -289,10 +302,10 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({ studen
 
     // --- PAYMENT MODAL STATE ---
     const [showPaymentModal, setShowPaymentModal] = useState(false);
-    const [paymentData, setPaymentData] = useState({
+    const [paymentData, setPaymentData] = useState<PaymentState>({
         amount: 0,
-        method: 'Наличные' as 'Наличные' | 'Алиф' | 'DC' | 'Карта' | 'Перевод',
-        subjectDistribution: {} as Record<string, number>,
+        method: 'Наличные',
+        subjectDistribution: {},
         promiseDate: '',
         promiseReason: ''
     });
@@ -320,7 +333,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({ studen
                     }
                 }
                 const regionalPrice = (branch && course.branchPrices && course.branchPrices[branch]) 
-                                      ? course.branchPrices[branch] 
+                                      ? course.branchPrices[student.branch!] 
                                       : (course.price || 0);
                 total += regionalPrice;
             }
@@ -764,7 +777,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({ studen
         return months;
     }, []);
 
-    const heatmapData = useMemo(() => {
+    const heatmapData: HeatmapRow[] = useMemo(() => {
         const subjects = editingStudent.subjects || [];
         return subjects.map(sub => {
             const subjectExams = rawExams.filter(e => e.subject === sub);
