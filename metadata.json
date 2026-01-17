@@ -1,0 +1,7 @@
+{
+  "name": "Repetitor.tj",
+  "description": "A comprehensive CRM and LMS for educational centers featuring student management, finance tracking, scheduling, and academic performance monitoring.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
