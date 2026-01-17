@@ -206,4 +206,28 @@ export const Exams: React.FC = () => {
         </div>
         <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-left">
-            <thead className="bg-slate-50 dark:bg-slate-700/50 text-xs font-bold text-slate-500
+           <thead className="bg-slate-50 dark:bg-slate-700/50 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <tr>
+                  <th className="px-6 py-3 text-left">Ученик</th>
+                  <th className="px-6 py-3 text-left">Предмет</th>
+                  <th className="px-6 py-3 text-left">Результат</th>
+                  <th className="px-6 py-3 text-left">Дата</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                {/* Заглушка: пока здесь пусто, чтобы не было ошибок сборки */}
+                <tr>
+                  <td colSpan={4} className="px-6 py-8 text-center text-slate-500 text-sm">
+                    Список результатов пуст или загружается...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      
+    </div>
+  );
+};
+
+export default Exams;
