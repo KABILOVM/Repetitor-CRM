@@ -9,46 +9,46 @@
     <script>
       tailwind.config = {
         darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+            },
+          },
+        },
       }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-      body { font-family: 'Inter', sans-serif; }
-      /* Custom Scrollbar for dark mode compatibility */
+      /* Custom Scrollbar */
       .custom-scrollbar::-webkit-scrollbar {
         width: 6px;
         height: 6px;
       }
-      .custom-scrollbar::-webkit-scrollbar-track {
-        background: transparent;
-      }
+      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
       .custom-scrollbar::-webkit-scrollbar-thumb {
         background-color: #cbd5e1;
         border-radius: 3px;
         transition: background-color 0.2s;
       }
-      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background-color: #94a3b8;
-      }
-      .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-        background-color: #475569;
-      }
-      .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background-color: #64748b;
-      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
+      .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #475569; }
       
-      /* Hide default spin buttons for number inputs */
-      input::-webkit-outer-spin-button,
-      input::-webkit-inner-spin-button {
+      input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
         -webkit-appearance: none;
         margin: 0;
       }
-      input[type=number] {
-        -moz-appearance: textfield;
+      input[type=number] { -moz-appearance: textfield; }
+
+      .drag-over {
+        border-top: 4px solid #3b82f6 !important;
+        padding-top: 12px !important;
+        background-color: rgba(59, 130, 246, 0.05);
       }
     </style>
     <script>
-      // Initialize theme - Default to Light unless Dark is explicitly saved
       if (localStorage.getItem('theme') === 'dark') {
         document.documentElement.classList.add('dark');
       } else {
@@ -58,23 +58,26 @@
 <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom": "https://esm.sh/react-dom@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
+    "react-router-dom": "https://esm.sh/react-router-dom@6.22.3?external=react,react-dom",
+    "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react",
+    "recharts": "https://esm.sh/recharts@2.12.2?external=react,react-dom",
+    "xlsx": "https://esm.sh/xlsx@0.18.5",
+    "framer-motion": "https://esm.sh/framer-motion@11.0.0?external=react,react-dom",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.39.0",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "react/": "https://esm.sh/react@^19.2.3/",
-    "react-router-dom": "https://esm.sh/react-router-dom@^7.12.0",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "recharts": "https://esm.sh/recharts@^3.6.0",
-    "xlsx": "https://esm.sh/xlsx@^0.18.5",
-    "framer-motion": "https://esm.sh/framer-motion@^11.0.0",
     "vite": "https://esm.sh/vite@^7.3.1",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
-    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
   }
 }
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200">
+  <body class="bg-gray-50 text-slate-900 antialiased dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

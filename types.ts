@@ -1,26 +1,141 @@
 
-export enum UserRole {
-  Developer = 'Разработчик', // Hidden system role
-  GeneralDirector = 'Гендиректор', // Level 6
-  Director = 'Директор',         // Level 5
-  Financier = 'Финансист',       // Level 4
-  Admin = 'Администратор',       // Level 3
-  Teacher = 'Преподаватель',     // Level 2
-  Student = 'Ученик'             // Level 1
+export interface ExamResult {
+  id: number;
+  studentId: number;
+  studentName: string;
+  subject: string;
+  date: string;
+  score: number;
+  maxScore: number;
+  feedback?: string;
+  isExtra?: boolean; // Флаг: предмет не входит в основную программу ученика
 }
 
-export const ALL_PERMISSIONS = [
-  'CRM (Лиды)', 
-  'Студенты', 
-  'Группы', 
-  'Расписание', 
-  'Финансы', 
-  'Аналитика', 
-  'Настройки',
-  'Сотрудники'
-];
+export enum UserRole {
+  GeneralDirector = 'Генеральный Директор',
+  Director = 'Директор',
+  Admin = 'Администратор',
+  Financier = 'Финансист',
+  Teacher = 'Преподаватель',
+  Student = 'Ученик',
+  Developer = 'Разработчик'
+}
 
-// --- SaaS Configuration Types ---
+export enum Branch {
+  Dushanbe_Vatan = 'Душанбе (Ватан)',
+  Dushanbe_Rudaki = 'Душанбе (Рудаки)',
+  Khujand = 'Худжанд',
+  Kulob = 'Кулоб',
+  Bokhtar = 'Бохтар'
+}
+
+export enum Cluster {
+  Cluster1 = 'Кластер 1',
+  Cluster2 = 'Кластер 2',
+  Cluster3 = 'Кластер 3',
+  Cluster4 = 'Кластер 4',
+  Cluster5 = 'Кластер 5'
+}
+
+export enum StudentStatus {
+  Active = 'Активен',
+  Archived = 'Архив',
+  Paused = 'Пауза',
+  Dropped = 'Отвал',
+  Presale = 'Предзапись'
+}
+
+export enum PipelineStage {
+  New = 'Новая запись',
+  Call = 'Тестирование',
+  Trial = 'Пробный урок',
+  Contract = 'Договор',
+  Payment = 'Оплата'
+}
+
+export interface ParentInfo {
+  name: string;
+  role: string;
+  phone: string;
+  email?: string;
+}
+
+export interface StudentBook {
+  bookId: string;
+  name: string;
+  price: number;
+  isPaid: boolean;
+  isIssued: boolean;
+  issuedDate?: string;
+}
+
+export interface Student {
+  id: number;
+  fullName: string;
+  phone: string;
+  status: StudentStatus | string;
+  pipelineStage?: PipelineStage;
+  balance: number;
+  monthlyFee: number;
+  discountPercent?: number;
+  discountReason?: string;
+  discountDuration?: number;
+  consecutiveAbsences: number;
+  source: string;
+  studyLanguage?: string;
+  subjects?: string[];
+  assignedBooks?: StudentBook[];
+  groupIds?: number[];
+  cluster?: string;
+  branch?: Branch | string;
+  startDate?: string;
+  endDate?: string;
+  presaleDate?: string;
+  dropOffDate?: string;
+  leaveReason?: string;
+  parentName?: string;
+  parentPhone?: string;
+  parentEmail?: string;
+  parents?: ParentInfo[];
+  school?: string;
+  grade?: string;
+  birthYear?: string;
+  note?: string;
+  platformAccount?: string;
+  isColorBlind?: boolean;
+  debtPromise?: string;
+  debtPromiseDeadline?: string;
+  lastModifiedBy?: string;
+  lastModifiedAt?: string;
+  [key: string]: any;
+}
+
+export interface UserProfile {
+  fullName: string;
+  role: UserRole;
+  originalRole?: UserRole;
+  email: string;
+  permissions: string[];
+  branch?: Branch;
+  avatar?: string;
+  themeColor?: string;
+  organization_id?: string;
+  companyId?: string;
+  subject?: string;
+  subjects?: string[];
+}
+
+export interface SidebarItem {
+  id: string;
+  path: string;
+  label: string;
+  icon: string;
+  roles: UserRole[];
+  visible: boolean;
+  parentId?: string;
+  isGroup?: boolean;
+  isCustom?: boolean;
+}
 
 export interface ModuleConfig {
   crm: boolean;
@@ -34,295 +149,41 @@ export interface ModuleConfig {
   exams: boolean;
   violations: boolean;
   calls: boolean;
-}
-
-export interface DictionaryConfig {
-  sources: string[];
-  grades: string[];
-  studyGoals: string[];
-  leaveReasons: string[];
-  expenseCategories: string[];
-  [key: string]: string[]; // Allow dynamic expansion
-}
-
-// --- Dynamic Field System ---
-
-export type FieldType = 'text' | 'number' | 'date' | 'select' | 'boolean' | 'textarea' | 'email' | 'phone';
-
-export interface FieldSchema {
-  key: string; // The property name in the data object
-  label: string;
-  type: FieldType;
-  required: boolean;
-  hidden: boolean;
-  dictionaryKey?: string; // If type is 'select', which dictionary to use
-  placeholder?: string;
-  readOnly?: boolean; // For system fields like ID
-}
-
-export interface FormTabSchema {
-  id: string;
-  label: string;
-  icon?: string;
-  fields: FieldSchema[];
-}
-
-export interface TableColumnSchema {
-  key: string;
-  label: string;
-  visible: boolean;
-  width?: string;
-}
-
-export interface ModuleSettings {
-  students: {
-    tableColumns: TableColumnSchema[];
-    formTabs: FormTabSchema[];
-  };
-  // Future expansion for other modules
-  [key: string]: any;
+  surveys: boolean;
+  import: boolean;
+  journal: boolean;
+  tasks: boolean;
+  branches: boolean;
+  classes: boolean;
 }
 
 export interface Company {
   id: string;
   name: string;
-  logoUrl?: string;
-  domain?: string; // e.g., repetitor.tj
-  modules: ModuleConfig;
-  dictionaries: DictionaryConfig;
-  moduleSettings?: ModuleSettings; // New: Detailed configuration
-  createdAt: string;
   isActive: boolean;
-}
-
-// --------------------------------
-
-export interface UserProfile {
-  fullName: string;
-  avatar?: string;
-  role: UserRole;
-  originalRole?: UserRole; // Keeps track of the real role when acting as someone else (for Devs)
-  email: string;
-  permissions: string[];
-  branch?: Branch; // Assigned branch for the user
-  companyId?: string; // Tenant ID
-  subject?: string; // Legacy support
-  subjects?: string[]; // For teachers (multiple)
-  
-  // Backup & Integrations
-  googleDriveConnected?: boolean;
-  backupFrequency?: 'daily' | 'weekly' | 'off';
-  lastBackup?: string;
-}
-
-export enum Branch {
-  Dushanbe_Vatan = 'Душанбе (Ватан)',
-  Dushanbe_TSUM = 'Душанбе (ЦУМ)',
-  Dushanbe_82 = 'Душанбе (82 мкр)',
-  Dushanbe_9km = 'Душанбе (9 км)',
-  Khujand_Coop = 'Худжанд (Кооператор)',
-  Khujand_19 = 'Худжанд (19 мкр)',
-  Isfara = 'Исфара',
-  Tursunzade = 'Турсунзаде',
-  Jabbor_Rasulov = 'Дж. Расулов'
-}
-
-export enum Cluster {
-  C1 = '1 кластер',
-  C2 = '2 кластер',
-  C3 = '3 кластер',
-  C4 = '4 кластер',
-  C5 = '5 кластер',
-  English = 'Английский язык',
-  Math = 'Математика',
-  IELTS = 'IELTS'
-}
-
-// Default fallback lists (can be overridden by Company Config)
-export const DEFAULT_LEAVE_REASONS = [
-  "Переход в другой наш филиал",
-  "Болезнь ученика или члена семьи",
-  "Семейные проблемы",
-  "Отложил на следующий год",
-  "Переезд в другой город/за границу",
-  "Проблемы с оплатой",
-  "Не справляется с учёбой",
-  "Не понравились уроки",
-  "Далеко добираться",
-  "Проблемы с расписанием",
-  "Временная пауза",
-  "Переход в другой центр",
-  "Закрыли группу",
-  "Сдал экзамен",
-  "Нашли дальтонизм"
-];
-
-export enum StudentStatus {
-  Active = 'Активен',
-  Archived = 'Неактивен',
-  Presale = 'Предзапись',
-  Dropped = 'Отвалился',
-  Paused = 'Пауза'
-}
-
-export enum PipelineStage {
-  New = 'Записан',
-  Call = 'Тестирование',
-  Trial = 'Пробный урок',
-  Contract = 'Договор',
-  Payment = 'Ожидает оплаты'
-}
-
-export interface CourseBook {
-  id: string;
-  name: string;
-  price: number;
-}
-
-export interface BranchConfig {
-  price: number;
-  targetStudents: number; // Plan
-  isActive: boolean; // Is course available in this branch
-}
-
-export interface Course {
-  id: number;
-  name: string;
-  // Replaced global price/target with per-branch config
-  branchConfig?: Record<string, BranchConfig>; 
-  
-  description?: string;
-  duration?: string; // e.g. "3 months"
-  scheduleDays?: string[]; // e.g. ["Mon", "Wed"]
-  includedItems?: string[]; // "Certificate", "Book"
-  
-  icon?: string; // Icon name key
-  color?: string; // Color key
-  
-  books: CourseBook[];
-  receiptCode?: string; 
-  
-  // Legacy fields for backward compat (optional)
-  price?: number; 
-  branchPrices?: Record<string, number>; 
-  targetStudents?: number;
-}
-
-export interface Invoice {
-  id: number;
-  studentId: number;
-  studentName: string;
-  amount: number;
-  month: string; // Format "2024-03"
-  status: 'Оплачен' | 'Ожидает';
   createdAt: string;
-  subjects?: string[];
+  modules: ModuleConfig;
+  dictionaries: {
+    sources: string[];
+    grades: string[];
+    studyGoals: string[];
+    leaveReasons: string[];
+    expenseCategories: string[];
+  };
+  sidebarConfig?: SidebarItem[];
+  /* Fix: Updated rolePermissions to allow any value to support granular permission objects in addition to legacy string arrays */
+  rolePermissions?: Record<string, any>;
 }
 
 export interface AuditLog {
   id: number;
+  organization_id?: string;
   userId: string;
   userName: string;
-  action: string; 
-  details: string; 
+  action: string;
+  details: string;
   timestamp: string;
-  entityId?: number; 
-}
-
-export interface StudentBook {
-  bookId: string;
-  name: string;
-  price: number;
-  isPaid: boolean;
-  isIssued: boolean;
-  issuedDate?: string;
-}
-
-export interface ParentInfo {
-  name: string;
-  role: string; // 'Мама', 'Папа', 'Другое' (or custom string)
-  phone: string;
-  email?: string;
-}
-
-export interface Student {
-  id: number;
-  fullName: string;
-  phone: string;
-  source: string;
-  status: StudentStatus | string; // Allowing string for compatibility during import
-  pipelineStage: PipelineStage;
-  avatar?: string; // New avatar field
-  
-  // Legacy parent fields (kept for backward compatibility, sync with parents[0])
-  parentName?: string;
-  parentPhone: string;
-  parentEmail?: string;
-  
-  // New Array for multiple parents
-  parents?: ParentInfo[];
-
-  school?: string;
-  grade?: string;
-  birthYear?: string;
-  
-  subjects: string[]; // Supports multiple subjects (up to 5)
-  groupIds?: number[]; // IDs of groups the student is enrolled in
-  
-  branch?: Branch;
-  cluster?: Cluster;
-  
-  targetUniversity?: 'Local' | 'Foreign'; 
-  studyLanguage?: string;
-  materialsIssued?: boolean; 
-  assignedBooks?: StudentBook[]; 
-
-  presaleDate?: string; // Date added as Presale
-  primaryAdaptation?: boolean; 
-  platformAccount?: string; 
-  contract?: boolean;
-  
-  language?: string; 
-  studyGoal?: string; 
-  
-  startDate?: string; // Date became Active
-  endDate?: string; // Date became Inactive (from Active)
-  dropOffDate?: string; // Date became Dropped (from Presale)
-  leaveReason?: string;
-  
-  balance: number;
-  monthlyFee: number;
-  discountPercent?: number;
-  discountReason?: string; // Rename logic handled in UI, keeping key for compatibility
-  discountDuration?: number; // Number of months the discount is valid
-  presaleStatus?: string; 
-  note?: string;
-  isColorBlind?: boolean; 
-  
-  // Debt Promise Fields
-  debtPromise?: string;
-  debtPromiseDeadline?: string;
-  
-  lastAttendance?: string;
-  consecutiveAbsences: number;
-  lastModifiedBy?: string;
-  lastModifiedAt?: string;
-  
-  [key: string]: any; // Allow dynamic fields
-}
-
-export interface Group {
-  id: number;
-  name: string;
-  subject: string;
-  teacher: string;
-  schedule: string; // Legacy string description
-  scheduleDays?: string[]; // e.g. ["Пн", "Ср"]
-  scheduleTime?: string; // e.g. "14:00"
-  room?: string; // e.g. "101"
-  studentsCount: number;
-  maxStudents: number;
-  branch?: Branch; // Group belongs to a branch
+  entityId?: number | string;
 }
 
 export interface Transaction {
@@ -333,122 +194,325 @@ export interface Transaction {
   date: string;
   type: 'Payment' | 'Refund';
   purpose: string;
-  paymentMethod?: 'Наличные' | 'Алиф' | 'DC' | 'Карта' | 'Перевод';
-  createdBy?: string;
+  paymentMethod?: string;
+  createdBy: string;
 }
 
-export interface Lesson {
+export interface CourseBook {
+  id: string;
+  name: string;
+  price: number;
+}
+
+export interface CourseTopic {
+  id: string;
+  title: string;
+}
+
+export interface BranchConfig {
+  isActive: boolean;
+  price: number;
+}
+
+export interface CourseThematic {
+  id: string;
+  name: string;
+  topicIds: string[];
+  branchPrices: Record<number | string, number>;
+}
+
+export interface Course {
   id: number;
-  groupId: number;
-  groupName: string;
-  date: string;
-  topic: string;
-  completed: boolean;
+  name: string;
+  description?: string;
+  price: number;
+  maxExamScore?: number;
+  targetStudents?: number;
+  color?: string;
+  icon?: string;
+  books: CourseBook[];
+  topics?: CourseTopic[];
+  thematics?: CourseThematic[];
+  branchConfig?: Record<string, BranchConfig>;
+  branchPrices?: Record<string, number>;
+  includedItems?: string[];
+  scheduleDays?: string[];
 }
 
-// Renamed and Expanded from Teacher
-export interface Employee {
+export interface ScheduleSlot {
+  id: string;
+  day: string;
+  time: string;
+  endTime: string;
+  room?: string;
+}
+
+export interface Group {
   id: number;
-  fullName: string;
-  role: UserRole | string;
-  phone: string;
-  email: string;
-  birthYear?: string; // New: Birth Year
-  
-  status?: 'Active' | 'Fired'; // New: Status
-  firingDate?: string; // New
-  firingReason?: string; // New
-  mustChangePassword?: boolean; // New
-
-  companyId: string; // Tenant ID to isolate users
-
-  branches?: Branch[]; // Changed from single 'branch' to array
-  branch?: Branch; 
-  
-  // Dynamic fields based on role
-  subjects?: string[]; // New: Multiple subjects
-  subject?: string; // Deprecated but kept for compatibility
-  permissions?: string[]; // For Admins/Managers
-  
-  salary?: number;
-  login?: string;
-  password?: string;
-  hireDate?: string;
+  name: string;
+  subject: string;
+  teacher: string;
+  schedule: string;
+  scheduleDays?: string[];
+  scheduleTime?: string;
+  studentsCount: number;
+  maxStudents: number;
+  branch?: Branch | string;
+  room?: string;
+  courseProgramId?: string;
+  scheduleSlots?: ScheduleSlot[];
 }
-
-// Alias for compatibility if needed
-export type Teacher = Employee;
 
 export interface Violation {
   id: number;
   studentId: number;
   studentName: string;
+  type: 'Опоздание' | 'Поведение' | 'Успеваемость' | 'ДЗ';
   date: string;
-  type: 'Опоздание' | 'Поведение' | 'Успеваемость' | 'ДЗ'; // 'ДЗ' kept for backward compat
   comment: string;
-  subject?: string; // Optional: Subject context
-  reporter?: string; // Optional: Who reported it
+  reporter: string;
+  subject?: string;
 }
 
-export interface CallHistoryItem {
-  date: string;
-  result: string;
-  timestamp: string;
-}
-
-export interface CallTask {
+export interface Employee {
   id: number;
-  studentId: number;
-  studentName: string;
-  studentPhone?: string; // New
-  parentName?: string; // New
-  parentPhone: string;
-  reason: string;
-  status: 'Ожидает' | 'Выполнено';
-  date: string;
-  result?: string; // Latest result
-  history?: CallHistoryItem[]; // History of attempts
-}
-
-export interface ExamResult {
-  id: number;
-  studentId: number;
-  studentName: string;
-  subject: string;
-  date: string;
-  score: number;
-  maxScore: number;
-  feedback?: string;
-}
-
-// --- New Interfaces for Call Journals ---
-
-export interface RetentionLog {
-  id: number;
-  date: string;
-  studentName: string;
-  parentName?: string;
+  fullName: string;
+  role: UserRole | string;
+  login: string;
+  password?: string;
+  email: string;
   phone: string;
-  method: string;
-  topic: string;
-  courses?: string;
-  branch: string;
-  admin: string;
-  result: string;
-  comment?: string;
+  permissions?: string[];
+  branches?: Branch[];
+  branch?: Branch; // Deprecated but still used in some places
+  status?: 'Active' | 'Fired';
+  subjects?: string[];
+  subject?: string; // Primary subject
+  companyId: string;
+  avatar?: string;
+  birthYear?: string;
+  hireDate?: string;
+  firingDate?: string;
+  firingReason?: string;
+  mustChangePassword?: boolean;
+  inviteToken?: string;
+}
+
+export interface CourseProgram {
+  id: string;
+  name: string;
+  description?: string;
+  subjectIds: number[];
+  icon?: string;
+  color?: string;
+  duration?: string;
+  branchConfig?: Record<string, any>;
+}
+
+export interface Invoice {
+  id: number;
+  studentId: number;
+  studentName: string;
+  amount: number;
+  month: string;
+  status: 'Оплачен' | 'Ожидает';
 }
 
 export interface AttractionLog {
   id: number;
-  date: string;
   fullName: string;
   phone: string;
+  date: string;
   channel: string;
   source: string;
   request: string;
-  branch: string;
-  admin: string;
   result: 'Записался' | 'Подумает' | 'Отказ' | 'Недозвон';
-  refusalReason?: string;
+  admin: string;
+  branch: string;
   comment?: string;
 }
+
+export interface RetentionLog {
+  id: number;
+  studentName: string;
+  phone: string;
+  parentName?: string;
+  date: string;
+  method: string;
+  topic: string;
+  result: string;
+  admin: string;
+  branch: string;
+  courses?: string;
+  comment?: string;
+}
+
+export interface LearningSection {
+  id: string;
+  subjectId: string;
+  title: string;
+  order: number;
+}
+
+export interface LearningTopic {
+  id: string;
+  sectionId: string;
+  title: string;
+  order: number;
+}
+
+export interface QuizQuestion {
+  id: string;
+  text: string;
+  options: string[];
+  correctIndex: number;
+}
+
+export interface LearningLesson {
+  id: string;
+  topicId: string;
+  title: string;
+  order: number;
+  contentText?: string;
+  videoUrl?: string;
+  slidesUrl?: string;
+  quiz?: QuizQuestion[];
+}
+
+export interface StudentProgress {
+  studentId: number;
+  lessonId: string;
+  isCompleted: boolean;
+  quizScore?: number;
+  lastAttemptAt: string;
+}
+
+export enum SurveyQuestionType {
+  SingleChoice = 'SingleChoice',
+  MultipleChoice = 'MultipleChoice',
+  Text = 'Text',
+  Rating = 'Rating'
+}
+
+export interface SurveyQuestion {
+  id: string;
+  type: SurveyQuestionType;
+  text: string;
+  options?: string[];
+  required: boolean;
+}
+
+export interface Survey {
+  id: string;
+  title: string;
+  description?: string;
+  createdAt: string;
+  createdBy: string;
+  isActive: boolean;
+  targetRoles: UserRole[];
+  questions: SurveyQuestion[];
+}
+
+export interface SurveyAnswer {
+  questionId: string;
+  value: any;
+}
+
+export interface SurveyResponse {
+  id: string;
+  surveyId: string;
+  userId: string;
+  userName: string;
+  userRole: UserRole;
+  submittedAt: string;
+  answers: SurveyAnswer[];
+}
+
+export enum TaskStatus {
+  Todo = 'НУЖНО СДЕЛАТЬ',
+  InProgress = 'В РАБОТЕ',
+  Done = 'ГОТОВО'
+}
+
+export enum TaskPriority {
+  Low = 'Low',
+  Medium = 'Medium',
+  High = 'High',
+  Urgent = 'Urgent'
+}
+
+export type TaskType = 'Run' | 'Change';
+
+export interface SubTask {
+  id: string;
+  title: string;
+  isCompleted: boolean;
+}
+
+export interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  status: string;
+  priority: TaskPriority;
+  type: TaskType;
+  assigneeIds: number[];
+  subtasks: SubTask[];
+  teamId?: string;
+  sprintId?: string;
+  createdAt: string;
+  dueDate?: string;
+  tags: string[];
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  memberIds: number[];
+}
+
+export interface Sprint {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  status: 'active' | 'completed' | 'planned';
+}
+
+export interface Classroom {
+  id: string;
+  name: string;
+  capacity: number;
+}
+
+export interface BranchEntity {
+  id: number;
+  name: string;
+  address: string;
+  phone: string;
+  manager: string;
+  isActive: boolean;
+  classrooms: Classroom[];
+}
+
+export interface FieldSchema {
+  id: string;
+  label: string;
+  type: 'text' | 'number' | 'date' | 'select' | 'boolean';
+  options?: string[];
+  required: boolean;
+}
+
+export interface AppNotification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  createdAt: string;
+  read: boolean;
+  link?: string;
+}
+
+export const ALL_PERMISSIONS = ['CRM', 'Students', 'Groups', 'Schedule', 'Finance', 'Employees', 'Courses', 'Branches', 'Exams', 'Violations', 'Calls', 'Surveys', 'Analytics', 'Import', 'Journal', 'Tasks'];
+
+export const DEFAULT_LEAVE_REASONS = ['Окончание курса', 'Переезд', 'Финансовые трудности', 'Неуспеваемость', 'Личные причины', 'Другое'];
