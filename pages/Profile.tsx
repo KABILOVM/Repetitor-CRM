@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { storage, StorageKeys } from '../services/storage';
@@ -68,6 +69,35 @@ const MODULE_INFO: Record<keyof ModuleConfig, { label: string, icon: any }> = {
     tasks: { label: 'Задачи и спринты', icon: LayoutGrid },
     branches: { label: 'Филиалы', icon: MapPin },
     classes: { label: 'Обучение (LMS)', icon: GraduationCap }
+};
+
+// Helper function to compress image
+const compressImage = (dataUrl: string, maxWidth = 400, maxHeight = 400): Promise<string> => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            if (width > height) {
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width *= maxHeight / height;
+                    height = maxHeight;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx?.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.8));
+        };
+        img.src = dataUrl;
+    });
 };
 
 export const Profile: React.FC = () => {
@@ -170,7 +200,11 @@ export const Profile: React.FC = () => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => setUser({ ...user, avatar: reader.result as string });
+      reader.onloadend = async () => {
+          const originalData = reader.result as string;
+          const compressedData = await compressImage(originalData);
+          setUser({ ...user, avatar: compressedData });
+      };
       reader.readAsDataURL(file);
     }
   };

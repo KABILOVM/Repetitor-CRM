@@ -6,7 +6,7 @@ import { Lock, User, ArrowRight, AlertCircle, Info, KeyRound, Building2 } from '
 import { Employee, UserRole, UserProfile, Branch } from '../types';
 import { Logo } from '../components/Logo';
 
-// Hardcoded demo users to guarantee access
+// Hardcoded demo users to guarantee access - Only Super Admin kept
 const DEMO_USERS: Employee[] = [
   {
     id: 1,
@@ -19,70 +19,6 @@ const DEMO_USERS: Employee[] = [
     permissions: ['All'],
     branches: [],
     companyId: 'repetitor_tj'
-  },
-  {
-    id: 2,
-    fullName: 'Администратор Филиала',
-    role: UserRole.Admin,
-    login: 'branch',
-    password: '123',
-    email: 'admin.vatan@repetitor.tj',
-    phone: '992000000002',
-    branches: [Branch.Dushanbe_Vatan],
-    permissions: ['CRM', 'Students', 'Schedule', 'Finance'],
-    companyId: 'repetitor_tj'
-  },
-  {
-    id: 3,
-    fullName: 'Главный Бухгалтер',
-    role: UserRole.Financier,
-    login: 'fin',
-    password: '123',
-    email: 'finance@repetitor.tj',
-    phone: '992000000003',
-    permissions: ['Finance', 'Analytics', 'Students'],
-    branches: [],
-    companyId: 'repetitor_tj'
-  },
-  {
-    id: 4,
-    fullName: 'Васильева Елена',
-    role: UserRole.Teacher,
-    login: 'teacher',
-    password: '123',
-    email: 'elena@school.tj',
-    phone: '992000000004',
-    branches: [Branch.Dushanbe_Vatan],
-    subject: 'Математика',
-    subjects: ['Математика'],
-    companyId: 'repetitor_tj',
-    // Added missing permissions field
-    permissions: []
-  },
-  {
-    id: 5,
-    fullName: 'Директор по развитию',
-    role: UserRole.Director,
-    login: 'director',
-    password: '123',
-    email: 'director@repetitor.tj',
-    phone: '992000000005',
-    permissions: ['All'],
-    branches: [],
-    companyId: 'repetitor_tj'
-  },
-  {
-    id: 6,
-    fullName: 'Алиев Алишер',
-    role: UserRole.Student,
-    login: 'student',
-    password: '123',
-    email: 'student@school.tj',
-    phone: '992000000006',
-    branches: [Branch.Dushanbe_Vatan],
-    companyId: 'repetitor_tj',
-    // Added missing permissions field
-    permissions: []
   }
 ];
 
@@ -347,26 +283,10 @@ export const Login: React.FC = () => {
                 <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2 mb-2">
                     <Info size={14}/> Демо-доступ (Пароль: 123)
                 </h4>
-                <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="grid grid-cols-1 gap-2 text-xs">
                     <div className="bg-white dark:bg-slate-700 p-2 rounded border border-slate-200 dark:border-slate-600 cursor-pointer hover:border-blue-400" onClick={() => { setUsername('admin'); setPassword('123'); }}>
                         <span className="font-bold text-slate-800 dark:text-white">admin</span>
-                        <span className="block text-slate-500">Гендиректор</span>
-                    </div>
-                    <div className="bg-white dark:bg-slate-700 p-2 rounded border border-slate-200 dark:border-slate-600 cursor-pointer hover:border-blue-400" onClick={() => { setUsername('director'); setPassword('123'); }}>
-                        <span className="font-bold text-slate-800 dark:text-white">director</span>
-                        <span className="block text-slate-500">Директор</span>
-                    </div>
-                    <div className="bg-white dark:bg-slate-700 p-2 rounded border border-slate-200 dark:border-slate-600 cursor-pointer hover:border-blue-400" onClick={() => { setUsername('branch'); setPassword('123'); }}>
-                        <span className="font-bold text-slate-800 dark:text-white">branch</span>
-                        <span className="block text-slate-500">Админ фил.</span>
-                    </div>
-                    <div className="bg-white dark:bg-slate-700 p-2 rounded border border-slate-200 dark:border-slate-600 cursor-pointer hover:border-blue-400" onClick={() => { setUsername('fin'); setPassword('123'); }}>
-                        <span className="font-bold text-slate-800 dark:text-white">fin</span>
-                        <span className="block text-slate-500">Финансист</span>
-                    </div>
-                    <div className="bg-white dark:bg-slate-700 p-2 rounded border border-slate-200 dark:border-slate-600 cursor-pointer hover:border-blue-400" onClick={() => { setUsername('teacher'); setPassword('123'); }}>
-                        <span className="font-bold text-slate-800 dark:text-white">teacher</span>
-                        <span className="block text-slate-500">Учитель</span>
+                        <span className="block text-slate-500">Генеральный Директор (Super Admin)</span>
                     </div>
                 </div>
                 <div className="mt-2 text-[10px] text-slate-400 italic">ID Компании по умолчанию: repetitor_tj</div>

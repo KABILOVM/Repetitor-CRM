@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { storage, StorageKeys } from '../services/storage';
 import { Branch, BranchEntity, Student, Employee, StudentStatus, Classroom } from '../types';
@@ -36,22 +37,6 @@ export const Branches: React.FC = () => {
     // Classroom Temp State
     const [newRoomName, setNewRoomName] = useState('');
     const [newRoomCapacity, setNewRoomCapacity] = useState('');
-
-    // --- Init: Pre-populate from Enum if empty ---
-    useEffect(() => {
-        if (branches.length === 0) {
-            const initialBranches: BranchEntity[] = Object.values(Branch).map((name, idx) => ({
-                id: Date.now() + idx,
-                name: name,
-                address: '',
-                phone: '',
-                manager: '',
-                isActive: true,
-                classrooms: []
-            }));
-            setBranches(initialBranches);
-        }
-    }, [branches.length]);
 
     // Close logic
     const handleClose = () => {
@@ -235,7 +220,7 @@ export const Branches: React.FC = () => {
 
             {/* Modal */}
             {isModalOpen && editingBranch && (
-                <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-300">
+                <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-200">
                     <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh] border border-slate-100 dark:border-slate-700 overflow-hidden">
                         <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50 flex-shrink-0">
                             <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2 uppercase tracking-tight text-xl">

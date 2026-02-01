@@ -171,10 +171,7 @@ export const storage = {
       },
       sidebarConfig: DEFAULT_SIDEBAR,
       rolePermissions: {
-        [UserRole.Admin]: ['CRM', 'Students', 'Groups', 'Schedule', 'Finance', 'Exams', 'Violations', 'Calls', 'Surveys', 'Journal', 'Tasks'],
-        [UserRole.Teacher]: ['Students', 'Groups', 'Schedule', 'Exams', 'Violations', 'Surveys', 'Journal', 'Tasks', 'Courses'],
-        [UserRole.Financier]: ['Finance', 'Analytics', 'Students'],
-        [UserRole.Student]: ['Schedule', 'Surveys', 'Journal']
+        // Starts with empty permissions to be defined by Super Admin
       }
     };
   }

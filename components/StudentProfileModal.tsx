@@ -261,6 +261,36 @@ const ExamLineChartTooltip = ({ active, payload, label }: any) => {
     return null;
 };
 
+// Helper function to compress image
+const compressImage = (dataUrl: string, maxWidth = 400, maxHeight = 400): Promise<string> => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            if (width > height) {
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width *= maxHeight / height;
+                    height = maxHeight;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx?.drawImage(img, 0, 0, width, height);
+            // Convert to JPEG with 0.8 quality for optimal compression/quality ratio
+            resolve(canvas.toDataURL('image/jpeg', 0.8));
+        };
+        img.src = dataUrl;
+    });
+};
+
 export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({ student, onClose, onSave, onDelete }) => {
     const user = storage.get<UserProfile>(StorageKeys.USER_PROFILE, { role: UserRole.GeneralDirector, fullName: 'Admin', email: '', permissions: [] });
     const company = storage.getCompanyConfig(user.companyId || 'repetitor_tj');
@@ -650,26 +680,34 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({ studen
         setShowCamera(false);
     };
 
-    const capturePhoto = () => {
+    const capturePhoto = async () => {
         if (videoRef.current) {
             const canvas = document.createElement('canvas');
             canvas.width = videoRef.current.videoWidth;
             canvas.height = videoRef.current.videoHeight;
             canvas.getContext('2d')?.drawImage(videoRef.current, 0, 0);
-            const dataUrl = canvas.toDataURL('image/jpeg');
-            setEditingStudent(prev => ({ ...prev, avatar: dataUrl }));
+            
+            // Apply compression before saving
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            const compressed = await compressImage(dataUrl);
+            
+            setEditingStudent(prev => ({ ...prev, avatar: compressed }));
             stopCamera();
+            setShowPhotoMenu(false);
         }
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setEditingStudent(prev => ({ ...prev, avatar: reader.result as string }));
+            reader.onloadend = async () => {
+                const originalData = reader.result as string;
+                const compressedData = await compressImage(originalData);
+                setEditingStudent(prev => ({ ...prev, avatar: compressedData }));
             };
             reader.readAsDataURL(file);
+            setShowPhotoMenu(false);
         }
     };
 
@@ -1098,7 +1136,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({ studen
                                             {editingStudent.avatar ? <img src={editingStudent.avatar} alt="Avatar" className="w-full h-full object-cover" /> : <User size={36} className="text-slate-400" />}
                                         </div>
                                         {!isTeacher && (
-                                            <button type="button" onClick={() => setShowPhotoMenu(!showPhotoMenu)} className="absolute bottom-0 right-0 bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 p-2 rounded-full shadow-lg border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
+                                            <button type="button" onClick={() => setShowPhotoMenu(!showPhotoMenu)} className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full shadow-lg border border-white dark:border-slate-600 hover:bg-blue-700 transition-colors">
                                                 <Pencil size={14} className="pointer-events-none" />
                                             </button>
                                         )}
